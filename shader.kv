@@ -1,0 +1,14 @@
+#:kivy 1.9.1
+#: import GLShaderLexer pygments.lexers.GLShaderLexer
+
+<ShaderEditor>:
+    fs: ''
+    orientation: 'vertical'
+    ScrollView:
+        CodeInput:
+            id: shader_code
+            lexer: GLShaderLexer()
+            on_text: root.fs = self.text;
+
+ShaderEditor:
+    on_fs: print(self.fs);app.shader_target.fs = self.fs if app.shader_target else None; shader_code.text = self.fs;
