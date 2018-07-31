@@ -2,7 +2,8 @@ import kivy
 from kivy.app import App
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivy.storage.jsonstore import JsonStore
+# from kivy.storage.jsonstore import JsonStore
+from flatstore import FlatStore
 
 fs_header = '''
 #ifdef GL_ES
@@ -16,7 +17,7 @@ class ShaderEditor(BoxLayout):
     pass
 
 class ShaderApp(App):
-    store = JsonStore('fs_shader.json')
+    store = FlatStore('fs_shader.json')
     shader_target = ObjectProperty()
 
     def __init__(self,*args,**kwargs):

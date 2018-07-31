@@ -11,4 +11,4 @@
             on_text: root.fs = self.text;
 
 ShaderEditor:
-    on_fs: print(self.fs);app.shader_target.fs = self.fs if app.shader_target else None; shader_code.text = self.fs;
+    on_fs: app.shader_target.fs = self.fs if app.shader_target else None; shader_code.text = self.fs;
