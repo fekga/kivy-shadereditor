@@ -1,5 +1,5 @@
-# kivy-shadereditor3d
-(based on fekga's kivy-shadereditor)
+# kivy-shadereditor
+(see also <https://kivy.org/docs/examples/gen__demo__shadereditor__main__py.html>)
 
 ## Usage:
 * run this program in a IDE that shows console output, such as Geany
