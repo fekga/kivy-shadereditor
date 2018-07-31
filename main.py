@@ -11,7 +11,8 @@ from kivy.graphics import RenderContext
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.storage.jsonstore import JsonStore
+# from kivy.storage.jsonstore import JsonStore
+from flatstore import FlatStore
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty
 from kivy.base import EventLoop
 from kivy.lang import Builder
@@ -21,8 +22,7 @@ from kivy.uix.textinput import TextInput
 class RangeInput(TextInput):
     min_value = NumericProperty(0)
     max_value = NumericProperty(100)
-        
-    
+
     def insert_text(self, substring, from_undo=False):
         s = self.text+str(substring)
         try:
@@ -65,35 +65,38 @@ class ShaderView(FloatLayout):
             shader.fs = old_value
         else:
             print('Compiled!')
-    
+
     def reset_time(self):
         self.time = 0
 
 def on_touch_move(touch):
     mouse_pos = touch.pos
-    print(touch)
 
-class GameApp(App):
-    store = JsonStore('fs_shader.json')
+class FekgaShaderEditorApp(App):
+    store = FlatStore('fs_shader.json')
     fs = StringProperty()
 
     def on_start(self):
         if self.store.exists('shader'):
             self.fs = self.store.get('shader')['fragment']
-        pass
 
     def on_stop(self):
         self.store.put('shader',fragment=self.fs)
-        pass
+
+    def show_cursor_info(self, cursor_row, cursor_col):
+        self.ids.lineLabel.text = "line " + str(cursor_row+1)
+        self.ids.colLabel.text = " column " + str(cursor_col+1)
+        # print("line number: " + str(line_n_s))
+        # print("touch: " + str(touch))
 
     def build(self):
         self.ids = self.root.ids
         self.root.on_touch_move = on_touch_move
-        
+
     def toggle_fullscreen(self, toggle_value):
         self.root_window.borderless = toggle_value
         self.root_window.resizable = toggle_value
         self.root_window.fullscreen = [False,'auto'][toggle_value]
 
 if __name__ == '__main__':
-    GameApp(title='Shader').run()
+    FekgaShaderEditorApp(title='FekgaShaderEditor').run()

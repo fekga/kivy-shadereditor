@@ -40,7 +40,7 @@ GridLayout:
                             pos: self.pos
                             size: self.size
         FloatLayout:
-            id: code_view 
+            id: code_view
             fs: app.fs
             on_fs: shader_code.text = self.fs;shader_view.fs = self.fs
             opaque: True
@@ -56,6 +56,8 @@ GridLayout:
                     height: self.minimum_height
                     cursor_width: '5px'
                     on_text: code_view.fs = self.text; app.fs = self.text
+                    on_cursor_row: app.show_cursor_info(self.cursor_row, self.cursor_col)
+                    on_cursor_col: app.show_cursor_info(self.cursor_row, self.cursor_col)
     GridLayout:
         rows: len(self.children)
         size_hint_y: 1
@@ -103,5 +105,15 @@ GridLayout:
             size_hint_y: None
             height: 40
             on_release: shader_view.reset_time()
-            
-        
+        Label:
+            id: lineLabel
+            text: ''
+            size_hint_y: None
+            height: 16
+        Label:
+            id: colLabel
+            text: ''
+            size_hint_y: None
+            height: 16
+
+

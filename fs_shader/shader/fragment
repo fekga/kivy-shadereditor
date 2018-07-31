@@ -1,0 +1,127 @@
+uniform float time;
+uniform vec2 resolution;
+uniform vec2 mouse;
+
+const float pi = 3.141569;
+const float pi2 = pi*2.;
+const float pi_2 = pi/2.;
+
+#define min3(a,b,c) min(a,min(b,c))
+#define sin1(a) (sin(a)*.5+.5)
+#define cos1(a) (cos(a)*.5+.5)
+#define saw1(x) (abs(fract(x)*2.-1.)
+#define saw(x)  (abs(fract(x)*4.-2.)-1.)
+
+vec2 c_mul (vec2 a, vec2 b)
+{
+    return vec2(a.x*b.x-a.y*b.y,a.x*b.y+b.x*a.y);
+}
+
+vec2 c_conj (vec2 a)
+{
+    return vec2(a.x, -a.y);
+}
+
+vec2 c_inv (vec2 a)
+{
+    return c_conj(a) / dot(a, a);
+}
+
+vec2 c_div (vec2 a, vec2 b)
+{
+    return mat2(a,a.y,-a.x)*b/dot(b,b);
+}
+
+vec2 c_exp (vec2 a)
+{
+    return exp(a.x)*vec2(cos(a.y),sin(a.y));
+}
+
+vec2 tr(vec2 p)
+{
+    p/=resolution.xy;
+    p=-1.+2.*p;
+    p.x *=resolution.x/resolution.y;
+    return p;
+}
+
+float hash( float n )
+{
+return fract(sin(n)*43758.5453123);
+}
+
+float noise( in vec2 x )
+{
+vec2 p = floor(x);
+vec2 f = fract(x);
+f = f*f*(3.0-2.0*f);
+float n = p.x + p.y*157.0;
+return mix(mix( hash(n+  0.0), hash(n+  1.0),f.x),
+mix( hash(n+157.0), hash(n+158.0),f.x),f.y);
+}
+
+const mat2 m2 = mat2( 0.80, -0.60, 0.60, 0.80 );
+
+float fbm( vec2 p )
+{
+float f = 0.0;
+f += 0.5000*noise( p ); p = m2*p*2.02;
+f += 0.2500*noise( p ); p = m2*p*2.03;
+f += 0.1250*noise( p ); p = m2*p*2.01;
+f += 0.0625*noise( p );
+return f/0.9375;
+}
+
+float smin( float a, float b, float k )
+{
+    float res = exp( -k*a ) + exp( -k*b );
+    return -log( res )/k;
+}
+
+mat2 rot(float a)
+{
+    float c=cos(a),s=sin(a);
+    return mat2(c,-s,s,c);
+}
+
+vec2 F(vec2 p)
+{
+    p = c_mul(p,vec2(.0,1.));
+    return (c_exp(p) - c_exp(-p)*.5);
+}
+
+vec2 dF(vec2 p)
+{
+    p = c_mul(p,vec2(.0,1.));
+    return (c_exp(p) + c_exp(-p)*.5);
+}
+
+vec3 fractal(vec2 z, vec2 p, float iter)
+{
+    float i = .0;
+    for(i=.0;i<iter;i++)
+    {
+        z = z - c_div(F(z), dF(z));
+        if (length(F(z)) < 1e-5)
+            break;
+    }
+
+    return vec3(z,i/iter);
+}
+
+void main( void )
+{
+    vec2 p = tr(gl_FragCoord.xy);
+    vec3 col=vec3(.0);
+
+    p*=rot(time*.2);
+    p*=exp(-time*.1);
+    vec3 frac = fractal(p,tr(mouse),150.);
+    vec2 z = frac.xy;
+    float iter = frac.z;
+//  iter += time*.2;
+    col += iter;
+
+    col = pow(col,vec3(.85));
+    gl_FragColor = vec4(col,1.);
+}
